@@ -17,7 +17,7 @@ export class ProductDetailComponent {
 
   private productService = inject(ProductService);
   private cartService = inject(CartService);
-  // Products
+ 
   // Product to display
   readonly product$ = this.productService.product$
     .pipe(
