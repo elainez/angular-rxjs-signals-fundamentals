@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, EMPTY, filter, map, Observable, of, shareReplay, switchMap, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, EMPTY, filter, map, Observable, of, shareReplay, switchMap, tap, throwError } from 'rxjs';
 import { Product } from './product';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { HttpErrorService } from '../utilities/http-error.service';
@@ -31,20 +31,29 @@ export class ProductService {
     );
 
 
-  readonly product$ = this.productSelected$
-    .pipe(
-      filter(Boolean),
-      switchMap(id => {
-        const productUrl = `${this.productsUrl}/${id}`;
-        return this.http.get<Product>(productUrl)
-          .pipe(
-            //tap(p => console.log('product found', p)),
-            switchMap(p => this.getProductWithReview(p)),
-            catchError(error => this.handleError(error))
-          );
-      })
-    );
+  // readonly product$ = this.productSelected$
+  //   .pipe(
+  //     filter(Boolean),
+  //     switchMap(id => {
+  //       const productUrl = `${this.productsUrl}/${id}`;
+  //       return this.http.get<Product>(productUrl)
+  //         .pipe(
+  //           //tap(p => console.log('product found', p)),
+  //           switchMap(p => this.getProductWithReview(p)),
+  //           catchError(error => this.handleError(error))
+  //         );
+  //     })
+  //   );
 
+  product$ = combineLatest([this.productSelected$, this.products$])
+    .pipe(
+      map(([selectedProductId, products]) => {
+        return products.find(p => p.id === selectedProductId);
+      }),
+      filter(Boolean),
+      switchMap(product => this.getProductWithReview(product)),
+      catchError(error => this.handleError(error))
+    );
 
   private getProductWithReview(product: Product): Observable<Product> {
     if (product.hasReviews) {
