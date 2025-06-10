@@ -1,24 +1,31 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 
-import { NgIf, NgFor, CurrencyPipe } from '@angular/common';
+import { NgIf, NgFor, CurrencyPipe, AsyncPipe } from '@angular/common';
 import { Product } from '../product';
+import { ProductService } from '../product.service';
+import { catchError, EMPTY } from 'rxjs';
 
 @Component({
-    selector: 'pm-product-detail',
-    templateUrl: './product-detail.component.html',
-    standalone: true,
-    imports: [NgIf, NgFor, CurrencyPipe]
+  selector: 'pm-product-detail',
+  templateUrl: './product-detail.component.html',
+  standalone: true,
+  imports: [NgIf, NgFor, CurrencyPipe, AsyncPipe]
 })
 export class ProductDetailComponent {
-  // Just enough here for the template to compile
-  @Input() productId: number = 0;
-  errorMessage = '';
 
+  errorMessage = '';
+  private productService = inject(ProductService);
+  // Products
   // Product to display
-  product: Product | null = null;
+  readonly product$ = this.productService.product$
+    .pipe(
+      catchError(error => {
+        this.errorMessage = error; return EMPTY
+      })
+    );
 
   // Set the page title
-  pageTitle = this.product ? `Product Detail for: ${this.product.productName}` : 'Product Detail';
+  //pageTitle = this.product ? `Product Detail for: ${this.product.productName}` : 'Product Detail';
 
   addToCart(product: Product) {
   }
