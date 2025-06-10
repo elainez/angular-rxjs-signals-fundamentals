@@ -53,6 +53,7 @@ export class ProductService {
   productSelected(selectedProductId: number): void {
     this.productSelectedSubject.next(selectedProductId);
   }
+  
   private getProductWithReview(product: Product): Observable<Product> {
     if (product.hasReviews) {
       return this.http.get<Review[]>(this.revieiwService.getReviewUrl(product.id))
