@@ -13,22 +13,25 @@ import { catchError, EMPTY } from 'rxjs';
 })
 export class ProductListComponent {
   pageTitle = 'Products';
-  errorMessage = '';
+  
   private productService = inject(ProductService);
 
   // Products
-  readonly products$ = this.productService.products$
-  .pipe(
-    catchError(error =>  {
-      this.errorMessage = error;
-      return EMPTY;
-    })
-  );
+  // readonly products$ = this.productService.products$
+  // .pipe(
+  //   catchError(error =>  {
+  //     this.errorMessage = error;
+  //     return EMPTY;
+  //   })
+  // );
 
-  readonly product$ = this.productService.product$.pipe();
+  products = this.productService.products;
+  errorMessage = this.productService.productsError;
+  
+  readonly product = this.productService.product;
 
   // Selected product id to highlight the entry
-  readonly selectedProductId$ = this.productService.productSelected$;
+  readonly selectedProductId = this.productService.productIdSelected;
 
   onSelected(productId: number): void {
     this.productService.productSelected(productId);

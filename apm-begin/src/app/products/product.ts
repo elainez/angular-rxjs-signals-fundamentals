@@ -11,3 +11,8 @@ export interface Product {
   hasReviews?: boolean;
   reviews?: Review[];
 }
+
+export interface Result<T>{
+  error?: string; //made is optional so in case it is successful
+  data : T | undefined; // make is underfined so in case an error occurs
+}
